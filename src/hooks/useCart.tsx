@@ -12,10 +12,6 @@ interface UpdateProductAmount {
   amount: number;
 }
 
-interface ProductList {
-  productList: Product[]
-}
-
 interface CartContextData {
   cart: Product[];
   addProduct: (productId: number) => Promise<void>;
@@ -26,7 +22,7 @@ interface CartContextData {
 const CartContext = createContext<CartContextData>({} as CartContextData);
 
 export function CartProvider({ children }: CartProviderProps): JSX.Element {
-  const [productsList, setProductsList] = useState<ProductList[]>([]);
+  const [productsList, setProductsList] = useState<Product[]>([]);
   const [cart, setCart] = useState<Product[]>(() => {
     const storagedCart = localStorage.getItem('@RocketShoes:cart');
 
@@ -52,9 +48,11 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
       const filteredProducts = cart.filter(
         cartItem => cartItem.id === productId
         )
+      
+      setProductsList(filteredProducts)
         
-        // console.log(filteredProducts)
-      localStorage.setItem('@RocketShoes:cart', JSON.stringify(filteredProducts))
+        // console.log(filteredProducts)z
+      localStorage.setItem('@RocketShoes:cart', JSON.stringify(productsList))
     } catch {
       toast.error('Quantidade solicitada fora de estoque');
     }
