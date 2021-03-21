@@ -39,7 +39,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
       product.amount = 1;
 
       setCart([...cart, product])
-      localStorage.setItem('@RocketShoes:cart', JSON.stringify(cart));
+      localStorage.setItem('@RocketShoes:cart', JSON.stringify([...cart, product]));
     } catch {
       toast.error('Quantidade solicitada fora de estoque');
     }
