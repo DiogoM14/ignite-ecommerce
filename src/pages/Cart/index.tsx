@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   MdDelete,
   MdAddCircleOutline,
@@ -56,7 +55,7 @@ const Cart = (): JSX.Element => {
   }
 
   function handleRemoveProduct(productId: number) {
-    // TODO
+    removeProduct(productId)
   }
 
   return (
@@ -73,7 +72,7 @@ const Cart = (): JSX.Element => {
         </thead>
         {cartFormatted.map(product => {
           return (
-            <tbody>
+            <tbody key={product.id}>
               <tr data-testid="product">
                 <td>
                   <img src={product.image} alt={product.title} />
@@ -114,7 +113,7 @@ const Cart = (): JSX.Element => {
                   <button
                     type="button"
                     data-testid="remove-product"
-                  // onClick={() => handleRemoveProduct(product.id)}
+                  onClick={() => handleRemoveProduct(product.id)}
                   >
                     <MdDelete size={20} />
                   </button>

@@ -44,7 +44,9 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
 
         updateProductAmount(productToUpdateAmount)
       } else {
-        let product = await api.get(`/products/${productId}`).then(response => response.data);
+        let product = await api.get(`/products/${productId}`).then(response => response.data).catch(() => {
+          throw new Error('Erro na adição do produto')
+        });
 
         product = {
           ...product,
@@ -54,16 +56,26 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
         setCart([...cart, product])
         localStorage.setItem('@RocketShoes:cart', JSON.stringify([...cart, product]))
       }
-    } catch {
-      toast.error('Quantidade solicitada fora de estoque');
+    } catch (error) {
+      toast.error(error.message);
     }
   };
  
   const removeProduct = (productId: number) => {
     try {
-      // TODO
-    } catch {
-      // TODO
+      const findProductByIndex = cart.findIndex(product => product.id === productId)
+
+      if (findProductByIndex === -1) {
+        throw new Error('Erro na remoção do produto')
+      }
+
+      const findToRemoveProduct = cart.filter(product => product.id !== productId)
+
+      setCart(findToRemoveProduct);
+
+      localStorage.setItem('@RocketShoes:cart', JSON.stringify(findToRemoveProduct))
+    } catch (error) {
+      toast.error(error.message);
     }
   };
 
@@ -72,15 +84,19 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     amount,
   }: UpdateProductAmount) => {
     try {
-      console.log("updateProductAmount " +  amount)
-
-      const getProductToUpdate = await api.get(`/stock/${productId}`).then(response => response.data)
+      const getProductToUpdate = await api.get(`/stock/${productId}`).then(response => response.data).catch(() => {
+        throw new Error('Erro na alteração de quantidade do produto')
+      });
 
       if (getProductToUpdate.amount < amount) {
         throw new Error("Quantidade solicitada fora de estoque")
       }
+
+      if (amount < 1) {
+        throw new Error("Quantidade solicitada fora de estoque")
+      }
       
-      const findCartItem = cart.find(product => product.id === productId);
+      const findCartItem = cart.find(product => product.id === productId)
 
       if (!findCartItem) {
         throw new Error('Erro na alteração de quantidade do produto')
